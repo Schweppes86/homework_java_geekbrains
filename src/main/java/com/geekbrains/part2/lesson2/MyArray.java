@@ -6,14 +6,26 @@ public class MyArray {
         String [][] firstArray = {{"5","7","3","17"}, {"7","0","1","12"}, {"8","1","2","3"}};
         String [][] secondArray = {{"1","1","1","1"}, {"1","1","s","1"}, {"1","1","1","1"}, {"1","1","1","1"}};
         String [][] thirdArray = {{"1","1","1","1"}, {"1","1","1","1"}, {"1","1","1","1"}, {"1","1","1","1"}};
+        ArrayOperation array = new ArrayOperation();
 
-        //wrong size
-        // new ArraySum().sumAllElements(firstArray);
+        try {
+            //wrong size
+            //array.sumAllElements(firstArray);
 
-        // one invalid element
-        // new ArraySum().sumAllElements(secondArray);
+            // one invalid element
+             array.sumAllElements(secondArray);
 
-        //normal array
-        new ArraySum().sumAllElements(thirdArray);
+            //normal
+            // array.sumAllElements(thirdArray);
+        }
+
+        catch (MyArraySizeException e) {
+            e.printStackTrace();
+        }
+
+        catch (MyArrayDataException e) {
+            System.out.println("Строка " + array.getStr() + ", столбец " + array.getCol() + " - элемент не удалось распарсить!");
+            e.printStackTrace();
+        }
     }
 }

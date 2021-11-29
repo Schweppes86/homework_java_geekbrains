@@ -2,33 +2,24 @@ package com.geekbrains.part2.lesson2;
 
 import static java.lang.Integer.parseInt;
 
-public class ArraySum {
-    public void sumAllElements(String[][] array) {
+public class ArrayOperation {
+    private int col = 0;
+    private int str = 0;
+
+    public void sumAllElements(String[][] array) throws MyArraySizeException, MyArrayDataException {
         int sum = 0;
 
-        try {
-            arraySizeChecker(array);
-            sumAllElements(array, sum);
-        }
-
-        catch (MyArraySizeException e) {
-            e.printStackTrace();
-        }
+        arraySizeChecker(array);
+        sumAllElements(array, sum);
     }
 
-    private void sumAllElements(String[][] array, int sum) {
+    private void sumAllElements(String[][] array, int sum) throws MyArrayDataException{
 
         for (int i = 0; i < array.length; i++) {
+            str = i;
             for (int j = 0; j < array[i].length; j++) {
-
-                try {
-                    sum += parseSymbol(array[i][j]);
-                }
-
-                catch (MyArrayDataException e) {
-                    e.printStackTrace();
-                    System.out.println("Строка " + i + ", столбец " + j + " - элемент не удалось распарсить!");
-                }
+                col = j;
+                sum += parseSymbol(array[i][j]);
             }
         }
 
@@ -52,5 +43,13 @@ public class ArraySum {
         catch (NumberFormatException e) {
             throw new MyArrayDataException("Wrong symbol");
         }
+    }
+
+    public int getCol() {
+        return col+1;
+    }
+
+    public int getStr() {
+        return str+1;
     }
 }
