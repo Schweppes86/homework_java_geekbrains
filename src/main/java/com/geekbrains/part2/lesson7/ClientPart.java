@@ -1,6 +1,7 @@
 package com.geekbrains.part2.lesson7;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Scanner;
 
 public class ClientPart {
@@ -30,12 +31,17 @@ public class ClientPart {
                     e.printStackTrace();
                     System.out.println("Что-то пошло не так. Попробуйте ввести нужный город снова");
                 }
+                catch (SQLException e) {
+                    e.printStackTrace();
+                    System.out.println("При чтении с бд произошла ошибка.");
+                }
             }
         }
     }
 
     private void inputPeriod() {
-        System.out.println("Введите требуемый период прогноза: 1 - прогноз на 1 день, 2 - прогноз на 5 дней");
+        System.out.println("Введите требуемый период прогноза: 1 - прогноз на 1 день, 2 - прогноз на 5 дней. Данные будут сохранены в БД.\n " +
+                "3 - для получения сохраненных прогнозов из БД");
         period = sc.nextLine();
     }
 
@@ -45,7 +51,7 @@ public class ClientPart {
             return false;
         }
 
-        if (period.equals("1") || period.equals("2")) return true;
+        if (period.equals("1") || period.equals("2") || period.equals("3")) return true;
 
         System.out.println("Неверный ввод");
         return false;
