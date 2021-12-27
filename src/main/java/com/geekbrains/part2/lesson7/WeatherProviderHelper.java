@@ -5,13 +5,17 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.geekbrains.part2.lesson7.entity.DailyForecast;
+import com.geekbrains.part2.lesson7.entity.DailyForecastForDB;
 import com.geekbrains.part2.lesson7.enums.Periods;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.sqlite.core.DB;
 
 import java.io.IOException;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class WeatherProviderHelper implements WeatherProvider {
@@ -67,14 +71,44 @@ public class WeatherProviderHelper implements WeatherProvider {
                     .build();
 
             Response response = client.newCall(request).execute();
-            readResponse(response.body().string());
-        }
-    }
+            String responseString = response.body().string();
 
-    private void readResponse(String responseString) throws JsonProcessingException {
-        String dailyForecastsString = objectMapper.readTree(responseString).at("/DailyForecasts").toString();
-        List<DailyForecast> dailyForecasts = objectMapper.readValue(dailyForecastsString, new TypeReference<List<DailyForecast>>() {});
-        System.out.println(dailyForecasts);
+            String dailyForecastsString = objectMapper.readTree(responseString).at("/DailyForecasts").toString();
+            List<DailyForecast> dailyForecasts = objectMapper.readValue(dailyForecastsString, new TypeReference<List<DailyForecast>>() {});
+            System.out.println(dailyForecasts);
+
+            DailyForecastForDB dailyForecastModelForDB1 = new DailyForecastForDB();
+            DailyForecastForDB dailyForecastModelForDB2 = new DailyForecastForDB();
+            DailyForecastForDB dailyForecastModelForDB3 = new DailyForecastForDB();
+            DailyForecastForDB dailyForecastModelForDB4 = new DailyForecastForDB();
+            DailyForecastForDB dailyForecastModelForDB5 = new DailyForecastForDB();
+
+            ArrayList<DailyForecastForDB> dailyForecastModelForDBList = new ArrayList<>();
+            dailyForecastModelForDBList.add(dailyForecastModelForDB1);
+            dailyForecastModelForDBList.add(dailyForecastModelForDB2);
+            dailyForecastModelForDBList.add(dailyForecastModelForDB3);
+            dailyForecastModelForDBList.add(dailyForecastModelForDB4);
+            dailyForecastModelForDBList.add(dailyForecastModelForDB5);
+
+            for (int i = 0; i < 5; i++){
+                dailyForecastModelForDBList.get(i)
+                        .setCity(selectedCity)
+                        .setLocalDate(dailyForecasts.get(i).getDate())
+                        .setTempMin(dailyForecasts.get(i).getTemperatureObject().getMinimum().getValue())
+                        .setTempMax(dailyForecasts.get(i).getTemperatureObject().getMaximum().getValue())
+                        .setTextDay(dailyForecasts.get(i).getDayObject().getIconPhrase())
+                        .setTextNight(dailyForecasts.get(i).getNightObject().getIconPhrase());
+            }
+
+            DBController dBRepository = new DBController();
+            try {
+                for (int i = 0; i < 5; i++){
+                    dBRepository.saveWeatherData(dailyForecastModelForDBList.get(i));
+                }
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
+        }
     }
 
     private String detectCityKey(String selectedCity) throws IOException {
